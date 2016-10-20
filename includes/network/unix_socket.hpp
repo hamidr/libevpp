@@ -2,7 +2,7 @@
 
 #include "async_socket.hpp"
 
-namespace async_redis {
+namespace io {
   namespace network
   {
     template<typename InputOutputHanler>

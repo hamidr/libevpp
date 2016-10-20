@@ -1,6 +1,6 @@
 #include "../../includes/event_loop/event_loop_ev.h"
 
-namespace async_redis {
+namespace io {
 namespace event_loop {
 
 event_loop_ev::event_loop_ev()

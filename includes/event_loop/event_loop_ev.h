@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <queue>
 
-namespace async_redis {
+namespace io {
   namespace event_loop
   {
     class event_loop_ev

@@ -11,7 +11,7 @@ template<typename InputOutputHandler>
 class tcp_server
 {
 public:
-  using tcp_socket   = async_redis::network::tcp_socket<InputOutputHandler>;
+  using tcp_socket   = io::network::tcp_socket<InputOutputHandler>;
 
   tcp_server(InputOutputHandler &event_loop)
     : loop_(event_loop) {
@@ -87,7 +87,7 @@ int main(int argc, char** args)
    if (argc != 2)
      return 0;
 
-   async_redis::event_loop::event_loop_ev loop;
+   io::event_loop::event_loop_ev loop;
 
    tcp_server<decltype(loop)> server(loop);
    int port  = std::stoi(args[1]);

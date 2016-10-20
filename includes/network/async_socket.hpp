@@ -11,7 +11,7 @@
 
 #include <string>
 
-namespace async_redis {
+namespace io {
   namespace network
   {
     using socket_t = struct sockaddr;
