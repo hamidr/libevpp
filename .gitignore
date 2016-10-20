@@ -27,3 +27,11 @@
 *.exe
 *.out
 *.app
+
+*.*un~
+
+#vim swap file
+*.swp
+
+# build directory
+build/
