@@ -2,11 +2,8 @@
 
 
 #include <sys/socket.h>
-#include <sys/un.h>
-#include <errno.h>
 #include <sys/fcntl.h> // fcntl
 #include <unistd.h> // close
-#include <netinet/in.h>
 #include <arpa/inet.h>
 
 #include <string>
@@ -27,8 +24,8 @@ namespace io {
     {
     public:
       using socket_identifier_t  = typename InputOutputHanler::socket_identifier_t;
-      using recv_cb_t         = std::function<void (int)>;
-      using ready_cb_t        = std::function<void ()>;
+      using recv_cb_t         = std::function<void (ssize_t)>;
+      using ready_cb_t        = std::function<void (ssize_t)>;
       using connect_handler_t = std::function<void (bool)>;
 
       async_socket(InputOutputHanler& io)
@@ -45,21 +42,19 @@ namespace io {
       }
 
       ~async_socket() {
-        if (is_connected_) {
+        if (is_connected_)
           close();
-          io_.unwatch(id_);
-        }
       }
 
-      inline int send(const string& data) {
+      inline ssize_t send(const string& data) {
         return ::send(fd_, data.data(), data.size(), 0);
       }
 
-      inline int send(const char *data, size_t len) {
+      inline ssize_t send(const char *data, size_t len) {
         return ::send(fd_, data, len, 0);
       }
 
-      inline int receive(char *data, size_t len) {
+      inline ssize_t receive(char *data, size_t len) {
         return ::recv(fd_, data, len, 0);
       }
 
@@ -72,6 +67,7 @@ namespace io {
       }
 
       bool close() {
+        io_.unwatch(id_);
         auto res = ::close(fd_) == 0;
         is_connected_ = false;
         fd_ = -1;
@@ -84,8 +80,7 @@ namespace io {
           return;
 
         return io_.async_write(id_, [this, data, cb]() {
-            send(data);
-            cb();
+            cb(send(data));
           });
       }
 
@@ -96,10 +91,10 @@ namespace io {
 
         return io_.async_read(id_, [&, buffer, max_len,  cb]() {
             auto l = receive(buffer, max_len);
-            if (l == 0) {
-              io_.unwatch(id_);
-              close();
-            }
+
+            if (l == 0)
+              this->close();
+
             cb(l);
           });
       }
