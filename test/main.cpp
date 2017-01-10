@@ -1,7 +1,4 @@
-#include <event_loop/event_loop_ev.h>
 
-#include <network/tcp_socket.hpp>
-#include <network/unix_socket.hpp>
 #include "../examples/tcp_server.hpp"
 
 

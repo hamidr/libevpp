@@ -1,11 +1,11 @@
 #pragma once
 
-#include <string>
-#include <memory>
-#include <functional>
-#include <iostream>
-#include <sstream>
 #include <unordered_map>
+
+#include <libevpp/event_loop/event_loop_ev.h>
+
+#include <libevpp/network/tcp_socket.hpp>
+#include <libevpp/network/unix_socket.hpp>
 
 namespace libevpp {
 namespace examples {

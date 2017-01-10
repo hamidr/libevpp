@@ -20,7 +20,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
 set(PROJECT_SOURCE_DIR src)
-set(PROJECT_INCLUDE_DIR includes/libevpp)
+set(PROJECT_INCLUDE_DIR includes)
 
 include_directories(${PROJECT_INCLUDE_DIR})
 include_directories("/usr/include/")
@@ -47,5 +47,5 @@ endif()
 
 target_link_libraries(network event_loop ev)
 
-add_executable (a1.out ${CMAKE_SOURCE_DIR}/test/main.cpp)
+add_executable (a1.out test/main.cpp)
 target_link_libraries(a1.out network)
