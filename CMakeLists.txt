@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.8)
 
-project (async-redis)
+project (libevpp)
 
 set(DEBUG_MODE ON CACHE BOOL "Debug mode") 
 set(LIB_INSTALL_DIR "/ust/local/lib/" CACHE PATH "")
@@ -28,16 +28,30 @@ include_directories("/usr/local/include")
 link_directories("/usr/lib")
 link_directories("/usr/local/lib")
 
+
 add_library(event_loop
+  ${PROJECT_SOURCE_DIR}/event_loop/socket_watcher.cpp
   ${PROJECT_SOURCE_DIR}/event_loop/event_loop_ev.cpp)
 
-target_link_libraries(event_loop ev)
+add_library(network
+  ${PROJECT_SOURCE_DIR}/network/async_socket.cpp
+  ${PROJECT_SOURCE_DIR}/network/unix_socket.cpp
+  ${PROJECT_SOURCE_DIR}/network/tcp_socket.cpp)
+
+## Compiler flags
+if(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "-O2")        ## Optimize
+    set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
+endif()
+
+target_link_libraries(network event_loop ev)
 
 install(TARGETS event_loop
   LIBRARY DESTINATION /usr/local/lib/
   ARCHIVE DESTINATION /usr/local/lib/)
 
+
 install(DIRECTORY ${PROJECT_INCLUDE_DIR}/ DESTINATION /usr/local/include)
 
-add_executable (tcp_server ${CMAKE_SOURCE_DIR}/test/tcp_server.cpp)
-target_link_libraries(tcp_server event_loop ev)
+add_executable (a1.out ${CMAKE_SOURCE_DIR}/test/main.cpp)
+target_link_libraries(a1.out network)
