@@ -1,4 +1,4 @@
-#include "../../includes/network/tcp_socket.hpp"
+#include <network/tcp_socket.hpp>
 
 #include <arpa/inet.h>
 
