@@ -17,9 +17,10 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
-set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
-set(PROJECT_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/includes/libevpp)
+
+#set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
+set(PROJECT_SOURCE_DIR src)
+set(PROJECT_INCLUDE_DIR includes/libevpp)
 
 include_directories(${PROJECT_INCLUDE_DIR})
 include_directories("/usr/include/")
