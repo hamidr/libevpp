@@ -1,7 +1,5 @@
 #pragma once
 
-#include <unordered_map>
-
 #include <libevpp/event_loop/event_loop_ev.h>
 
 #include <libevpp/network/tcp_socket.hpp>
@@ -21,6 +19,9 @@ namespace examples {
     }
 
     void listen(int port) {
+      listener_.set_reuseport();
+      listener_.set_reuseaddr();
+
       if (!listener_.bind("127.0.0.1", port) || !listener_.listen())
         throw;
 
@@ -31,19 +32,15 @@ namespace examples {
     void accept(std::shared_ptr<async_socket> socket) {
       auto receiver = std::bind(&tcp_server::chunk_received, this, std::placeholders::_1, socket);
       socket->async_read(buffer_, max_buffer_length, receiver);
-
-      conns_.emplace(socket, nullptr);
     }
 
   private:
     void chunk_received(int len, std::shared_ptr<async_socket>& socket)
     {
-      std::string command;
-
-      if (len <= 0) {
-        conns_.erase(socket);
+      if (len <= 0)
         return;
-      }
+
+      std::string command;
 
       for(int n = 0; n < len; ++n) {
 
@@ -64,9 +61,9 @@ namespace examples {
       fflush(stdout);
 
       if (command == "close") {
-        socket->async_write("good bye!", [this, &socket](ssize_t l) {
-            loop_.async_timeout(1, [this, &socket]() {
-                conns_.erase(socket);
+        socket->async_write("good bye!", [this, socket](ssize_t l) {
+            loop_.async_timeout(1, [this, socket]() {
+                //will close!
               });
           });
         return; // dont read
@@ -81,7 +78,6 @@ namespace examples {
 
     tcp_socket listener_;
     event_loop::event_loop_ev& loop_;
-    std::unordered_map<socket_t, void*> conns_;
     enum { max_buffer_length = 1024 };
     char buffer_[max_buffer_length];
   };

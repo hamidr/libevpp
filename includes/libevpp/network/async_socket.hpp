@@ -40,6 +40,8 @@ namespace libevpp {
       bool async_write(const string& data, ready_cb_t cb);
       bool async_read(char *buffer, int max_len, recv_cb_t cb);
       void async_accept(const std::function<void(std::shared_ptr<async_socket>)>& cb);
+      bool set_reuseport();
+      bool set_reuseaddr();
 
       bool is_connected() const;
 

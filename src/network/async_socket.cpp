@@ -26,11 +26,25 @@ ssize_t async_socket::send(const char *data, size_t len) {
   return ::send(fd_, data, len, 0);
 }
 
-ssize_t async_socket::receive(char *data, size_t len) {
+bool async_socket::set_reuseport()
+{
+  int enable = 1;
+  return (setsockopt(fd_, SOL_SOCKET, SO_REUSEPORT, &enable, sizeof(int)) != -1);
+}
+
+bool async_socket::set_reuseaddr()
+{
+  int enable = 1;
+  return (setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) != -1);
+}
+
+ssize_t async_socket::receive(char *data, size_t len)
+{
   return ::recv(fd_, data, len, 0);
 }
 
-bool async_socket::listen(int backlog) {
+bool async_socket::listen(int backlog)
+{
   return ::listen(fd_, backlog) == 0;
 }
 
