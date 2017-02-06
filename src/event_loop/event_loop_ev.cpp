@@ -18,14 +18,20 @@ void event_loop_ev::run()
   ev_run (loop_, 0);
 }
 
-void event_loop_ev::async_write(socket_identifier_t& watcher, action&& cb)
+bool event_loop_ev::async_write(socket_identifier_t& watcher, action&& cb)
 {
+  if (!watcher)
+    return false;
   watcher->start_writing_with(std::move(cb));
+  return true;
 }
 
-void event_loop_ev::async_read(socket_identifier_t& watcher, action&& cb)
+bool event_loop_ev::async_read(socket_identifier_t& watcher, action&& cb)
 {
+  if (!watcher)
+    return false;
   watcher->start_reading_with(std::move(cb));
+  return true;
 }
 
 void event_loop_ev::async_timeout(double time, action&& cb )
@@ -49,7 +55,8 @@ event_loop_ev::socket_identifier_t event_loop_ev::watch(int fd)
 
 void event_loop_ev::unwatch(socket_identifier_t& id)
 {
-  id->stop();
+  if(id)
+    id->stop();
 }
 
 }}

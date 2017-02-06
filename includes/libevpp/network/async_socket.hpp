@@ -24,10 +24,10 @@ namespace libevpp {
       using socket_identifier_t  = event_loop::event_loop_ev::socket_identifier_t;
       using recv_cb_t            = std::function<void (ssize_t)>;
       using ready_cb_t           = std::function<void (ssize_t)>;
+      using accept_cb_t          = std::function<void (std::shared_ptr<async_socket>&)>;
       using connect_handler_t    = std::function<void (bool)>;
 
-      async_socket(event_loop::event_loop_ev& io);
-
+      explicit async_socket(event_loop::event_loop_ev& io);
       ~async_socket();
 
       bool is_valid();
@@ -37,9 +37,9 @@ namespace libevpp {
       bool listen(int backlog = 0);
       int accept();
       bool close();
-      bool async_write(const string& data, ready_cb_t cb);
-      bool async_read(char *buffer, int max_len, recv_cb_t cb);
-      void async_accept(const std::function<void(std::shared_ptr<async_socket>)>& cb);
+      bool async_write(const string& data, ready_cb_t&& cb);
+      bool async_read(char *buffer, int max_len, recv_cb_t&& cb);
+      void async_accept(accept_cb_t&& cb);
       bool set_reuseport();
       bool set_reuseaddr();
 
@@ -66,6 +66,11 @@ namespace libevpp {
       void create_socket(int domain);
       int connect_to(socket_t* socket_addr, int len);
       int bind_to(socket_t* socket_addr, int len);
+
+    private:
+      void handle_write(const string& data, const ready_cb_t& cb);
+      void handle_read(char* buffer, int len, const recv_cb_t& cb);
+      void handle_accept(const accept_cb_t& cb);
 
     private:
       bool is_connected_ = false;

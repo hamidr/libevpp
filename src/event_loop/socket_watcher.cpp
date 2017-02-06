@@ -13,24 +13,20 @@ socket_watcher::socket_watcher(struct ev_loop* loop, int fd)
   read_watcher_.data = this;
 }
 
-  void socket_watcher::start_writing_with(action&& cb)
+void socket_watcher::start_writing_with(action&& cb)
 {
   write_handlers_.push(std::move(cb));
 
-  if (write_handlers_.size() != 1)
-    return;
-
-  start_writing();
+  if (write_handlers_.size() == 1)
+    start_writing();
 }
 
 void socket_watcher::start_reading_with(action&& cb)
 {
   read_handlers_.push(std::move(cb));
 
-  if (read_handlers_.size() != 1)
-    return;
-
-  start_reading();
+  if (read_handlers_.size() == 1)
+    start_reading();
 }
 
 void socket_watcher::call_read()
@@ -50,11 +46,11 @@ void socket_watcher::call_read()
 void socket_watcher::call_write()
 {
   if (write_handlers_.size())
-    {
-      auto &action = write_handlers_.front();
-      action();
-      write_handlers_.pop();
-    }
+  {
+    auto &action = write_handlers_.front();
+    action();
+    write_handlers_.pop();
+  }
 
   if (!write_handlers_.size())
     stop_writing();
@@ -65,8 +61,8 @@ void socket_watcher::write_handler(EV_P_ ev_io* w, int revents)
   if (revents & EV_ERROR)
     return;
 
-  socket_watcher* sq = reinterpret_cast<socket_watcher*>(w->data);
-  sq->call_write();
+  socket_watcher& sq = *reinterpret_cast<socket_watcher*>(w->data);
+  sq.call_write();
 }
 
 void socket_watcher::read_handler(EV_P_ ev_io* w, int revents)
@@ -74,8 +70,8 @@ void socket_watcher::read_handler(EV_P_ ev_io* w, int revents)
   if (revents & EV_ERROR)
     return;
 
-  socket_watcher* sq = reinterpret_cast<socket_watcher*>(w->data);
-  sq->call_read();
+  socket_watcher& sq = *reinterpret_cast<socket_watcher*>(w->data);
+  sq.call_read();
 }
 
 

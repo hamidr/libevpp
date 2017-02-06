@@ -25,20 +25,21 @@ namespace examples {
       if (!listener_.bind("127.0.0.1", port) || !listener_.listen())
         throw;
 
-      auto receiver = std::bind(&tcp_server::accept, this, std::placeholders::_1);
-      listener_.async_accept(receiver);
+      listener_.async_accept(std::bind(&tcp_server::accept, this, std::placeholders::_1));
     }
 
-    void accept(std::shared_ptr<async_socket> socket) {
-      auto receiver = std::bind(&tcp_server::chunk_received, this, std::placeholders::_1, socket);
-      socket->async_read(buffer_, max_buffer_length, receiver);
+    void accept(std::shared_ptr<async_socket>& socket) {
+      socket->async_read(buffer_, max_buffer_length, std::bind(&tcp_server::chunk_received, this, std::placeholders::_1, socket));
+
+      listener_.async_accept(std::bind(&tcp_server::accept, this, std::placeholders::_1));
     }
 
   private:
     void chunk_received(int len, std::shared_ptr<async_socket>& socket)
     {
-      if (len <= 0)
+      if (len <= 0) {
         return;
+      }
 
       std::string command;
 
@@ -57,8 +58,6 @@ namespace examples {
         }
       }
 
-      fprintf(stdout, ("cmd: " + command + "\n").data());
-      fflush(stdout);
 
       if (command == "close") {
         socket->async_write("good bye!", [this, socket](ssize_t l) {

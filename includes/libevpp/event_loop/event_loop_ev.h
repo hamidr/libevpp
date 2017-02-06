@@ -34,8 +34,8 @@ namespace libevpp {
       socket_identifier_t watch(int);
       void unwatch(socket_identifier_t&);
 
-      void async_write(socket_identifier_t& id, action&& cb);
-      void async_read(socket_identifier_t& id, action&& cb);
+      bool async_write(socket_identifier_t& id, action&& cb);
+      bool async_read(socket_identifier_t& id, action&& cb);
       void async_timeout(double time, action&& cb );
 
     private:
