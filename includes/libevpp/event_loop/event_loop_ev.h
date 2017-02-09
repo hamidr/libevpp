@@ -9,7 +9,7 @@ namespace libevpp {
     class event_loop_ev
     {
     public:
-      using socket_identifier_t = std::shared_ptr<socket_watcher>;
+      using socket_identifier_t = std::unique_ptr<socket_watcher>;
 
     private:
       struct timer_watcher

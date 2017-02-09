@@ -61,8 +61,7 @@ void socket_watcher::write_handler(EV_P_ ev_io* w, int revents)
   if (revents & EV_ERROR)
     return;
 
-  socket_watcher& sq = *reinterpret_cast<socket_watcher*>(w->data);
-  sq.call_write();
+  static_cast<socket_watcher*>(w->data)->call_write();
 }
 
 void socket_watcher::read_handler(EV_P_ ev_io* w, int revents)
@@ -70,8 +69,7 @@ void socket_watcher::read_handler(EV_P_ ev_io* w, int revents)
   if (revents & EV_ERROR)
     return;
 
-  socket_watcher& sq = *reinterpret_cast<socket_watcher*>(w->data);
-  sq.call_read();
+  static_cast<socket_watcher*>(w->data)->call_read();
 }
 
 

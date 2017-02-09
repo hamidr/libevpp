@@ -39,7 +39,7 @@ namespace libevpp {
       bool close();
       bool async_write(const string& data, ready_cb_t&& cb);
       bool async_read(char *buffer, int max_len, recv_cb_t&& cb);
-      void async_accept(accept_cb_t&& cb);
+      bool async_accept(accept_cb_t&& cb);
       bool set_reuseport();
       bool set_reuseaddr();
 

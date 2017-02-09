@@ -107,9 +107,12 @@ void async_socket::handle_read(char* buffer, int len, const recv_cb_t& cb)
   cb(l);
 }
 
-void async_socket::async_accept(accept_cb_t&& cb)
+bool async_socket::async_accept(accept_cb_t&& cb)
 {
-  io_.async_read(id_, std::bind(&async_socket::handle_accept, this, std::move(cb)));
+  if (!is_connected())
+    return false;
+
+  return io_.async_read(id_, std::bind(&async_socket::handle_accept, this, std::move(cb)));
 }
 
 void async_socket::handle_accept(const accept_cb_t& cb)
