@@ -4,6 +4,7 @@
 
 #include <libevpp/network/tcp_socket.hpp>
 #include <libevpp/network/unix_socket.hpp>
+#include <unordered_map>
 
 namespace libevpp {
 namespace examples {
@@ -12,7 +13,7 @@ namespace examples {
   {
   public:
     using tcp_socket   = libevpp::network::tcp_socket;
-    using async_socket   = libevpp::network::async_socket;
+    using async_socket = libevpp::network::async_socket;
 
     tcp_server(event_loop::event_loop_ev &event_loop)
       : loop_(event_loop), listener_(event_loop) {
@@ -29,6 +30,7 @@ namespace examples {
     }
 
     void accept(std::shared_ptr<async_socket>& socket) {
+      conns_.emplace(socket, nullptr);
       socket->async_read(buffer_, max_buffer_length, std::bind(&tcp_server::chunk_received, this, std::placeholders::_1, socket));
 
       listener_.async_accept(std::bind(&tcp_server::accept, this, std::placeholders::_1));
@@ -60,9 +62,9 @@ namespace examples {
 
 
       if (command == "close") {
-        socket->async_write("good bye!", [this, socket](ssize_t l) {
+        socket->async_write("good bye!", [this, &socket](ssize_t l) {
             loop_.async_timeout(1, [this, socket]() {
-                //will close!
+                conns_.erase(socket);
               });
           });
         return; // dont read
@@ -74,6 +76,7 @@ namespace examples {
 
   private:
     using socket_t = std::shared_ptr<async_socket>;
+    std::unordered_map<socket_t, void*> conns_;
 
     tcp_socket listener_;
     event_loop::event_loop_ev& loop_;
