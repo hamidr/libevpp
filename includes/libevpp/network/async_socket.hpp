@@ -68,7 +68,7 @@ namespace libevpp {
       int bind_to(socket_t* socket_addr, int len);
 
     private:
-      void handle_write(const string& data, const ready_cb_t& cb);
+      void handle_write(const string& data, ready_cb_t& cb);
       void handle_read(char* buffer, int len, const recv_cb_t& cb);
       void handle_accept(const accept_cb_t& cb);
 

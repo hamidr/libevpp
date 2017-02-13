@@ -74,7 +74,7 @@ bool async_socket::async_write(const string& data, ready_cb_t&& fn)
 }
 
 
-void async_socket::handle_write(const string& data, const ready_cb_t& cb)
+void async_socket::handle_write(const string& data, ready_cb_t& cb)
 {
   auto sent_chunk = send(data);
 
@@ -82,7 +82,7 @@ void async_socket::handle_write(const string& data, const ready_cb_t& cb)
     close();
 
   if (sent_chunk < data.size() && sent_chunk != -1) {
-    // async_write(data.substr(sent_chunk, data.size()), std::move(cb));
+    async_write(data.substr(sent_chunk, data.size()), std::move(cb));
     return;
   }
 
