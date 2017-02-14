@@ -56,10 +56,13 @@ namespace libevpp {
 
         io_.async_timeout(0.1, [this, timeout, args..., handler]() {
 
-            if (-1 == static_cast<SocketType&>(*this).connect(args...))
-              return this->async_connect<SocketType>(timeout+1, handler, args...);
+            if (-1 == static_cast<SocketType&>(*this).connect(args...)) {
+              this->async_connect<SocketType>(timeout+1, handler, args...);
+              return false;
+            }
 
             handler(is_connected());
+            return false;
           });
       }
 

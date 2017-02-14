@@ -15,7 +15,7 @@ event_loop_ev::event_loop_ev(struct ev_loop* loop)
 
 void event_loop_ev::run()
 {
-  ev_run (loop_, 0);
+  ev_run(loop_, 0);
 }
 
 bool event_loop_ev::async_write(socket_identifier_t& watcher, action&& cb)
@@ -36,17 +36,20 @@ bool event_loop_ev::async_read(socket_identifier_t& watcher, action&& cb)
   return true;
 }
 
-void event_loop_ev::async_timeout(double time, action&& cb )
+void event_loop_ev::async_timeout(double time, timer_action&& cb )
 {
-  timer_watcher *w = new timer_watcher(time, cb);
-  ev_timer_start (loop_, &w->timer);
+  timer_watcher *w = new timer_watcher(loop_, time, std::move(cb));
+  w->start();
 }
 
 void event_loop_ev::timer_handler(EV_P_ ev_timer* w, int revents)
 {
-  timer_watcher *watcher = reinterpret_cast<timer_watcher*>(w);
-  watcher->timeout_cb();
-  delete watcher;
+  timer_watcher *watcher = reinterpret_cast<timer_watcher*>(w->data);
+  if (!watcher->timeout_cb()) {
+    delete watcher;
+    return;
+  }
+  watcher->repeat();
 }
 
 
