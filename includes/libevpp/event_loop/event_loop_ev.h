@@ -16,6 +16,7 @@ namespace libevpp {
     public:
       event_loop_ev();
       event_loop_ev(struct ev_loop *);
+      ~event_loop_ev();
 
       void run();
 
@@ -26,9 +27,9 @@ namespace libevpp {
       bool async_read(socket_identifier_t& id, action&& cb);
       void async_timeout(double time, timer_action&& cb );
 
-
     private:
       struct ev_loop* loop_;
+      const bool loop_owner_;
     };
   }
 }

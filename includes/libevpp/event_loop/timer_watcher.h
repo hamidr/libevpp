@@ -16,12 +16,13 @@ class timer_watcher
 
   void start();
   void repeat();
+  void stop();
 
  private:
   static void timer_handler(EV_P_ ev_timer* w, int revents);
 
  private:
-  timer_action timeout_cb;
+  timer_action&& timeout_cb;
   ev_timer timer;
   double time_;
   struct ev_loop* loop_;

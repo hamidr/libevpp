@@ -4,13 +4,19 @@ namespace libevpp {
 namespace event_loop {
 
 event_loop_ev::event_loop_ev()
-  : loop_(EV_DEFAULT)
+  : loop_(EV_DEFAULT), loop_owner_(true)
 {
 }
 
 event_loop_ev::event_loop_ev(struct ev_loop* loop)
-  : loop_(loop)
+  : loop_(loop), loop_owner_(false)
 {
+}
+
+event_loop_ev::~event_loop_ev()
+{
+  if (loop_owner_)
+    ev_loop_destroy(loop_);
 }
 
 void event_loop_ev::run()
@@ -41,8 +47,6 @@ void event_loop_ev::async_timeout(double time, timer_action&& cb )
   timer_watcher *w = new timer_watcher(loop_, time, std::move(cb));
   w->start();
 }
-
-
 
 event_loop_ev::socket_identifier_t event_loop_ev::watch(int fd)
 {

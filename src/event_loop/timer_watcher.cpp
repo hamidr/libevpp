@@ -11,11 +11,15 @@ timer_watcher::timer_watcher(struct ev_loop* loop, double time, timer_action&& c
 }
 
 timer_watcher::~timer_watcher() {
-  ev_timer_stop(loop_, &timer);
+  stop();
 }
 
 void timer_watcher::start() {
   ev_timer_start (loop_, &timer);
+}
+
+void timer_watcher::stop() {
+  ev_timer_stop(loop_, &timer);
 }
 
 void timer_watcher::repeat() {
