@@ -42,15 +42,6 @@ void event_loop_ev::async_timeout(double time, timer_action&& cb )
   w->start();
 }
 
-void event_loop_ev::timer_handler(EV_P_ ev_timer* w, int revents)
-{
-  timer_watcher *watcher = reinterpret_cast<timer_watcher*>(w->data);
-  if (!watcher->timeout_cb()) {
-    delete watcher;
-    return;
-  }
-  watcher->repeat();
-}
 
 
 event_loop_ev::socket_identifier_t event_loop_ev::watch(int fd)
